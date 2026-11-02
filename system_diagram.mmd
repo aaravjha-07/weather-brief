@@ -1,0 +1,17 @@
+flowchart TD
+    A([Start: weather-brief.sh]) --> B{Config valid?}
+    B -- No --> X[Print error and exit]
+    B -- Yes --> C{Cache under 1 hour old?}
+    C -- Yes --> H[Load forecast from cache]
+    C -- No --> D[curl: fetch forecast from Open-Meteo]
+    D --> E{Fetch succeeded?}
+    E -- No --> X
+    E -- Yes --> F[Save JSON to cache/forecast.json]
+    F --> H
+    H --> I[jq: parse high, low, rain chance, wind]
+    I --> J[recommend.sh: compare to config thresholds]
+    J --> K{Rain chance over threshold?}
+    K -- Yes --> L[Print umbrella advice and summary]
+    K -- No --> M[Print no umbrella needed and summary]
+    L --> N([End])
+    M --> N
